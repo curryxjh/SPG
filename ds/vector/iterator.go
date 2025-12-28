@@ -4,6 +4,7 @@ import "SPL/utils/iterator"
 
 type T any
 
+// VectorIterator is an implementation of iterator.RandomAccessIterator for Vector.
 var _ iterator.RandomAccessIterator[T] = (*VectorIterator[T])(nil)
 
 type VectorIterator[T any] struct {
@@ -11,42 +12,45 @@ type VectorIterator[T any] struct {
 	position int
 }
 
-func (v VectorIterator[T]) IsValid() bool {
-	//TODO implement me
-	panic("implement me")
+func (iter *VectorIterator[T]) IsValid() bool {
+	return iter.position >= 0 && iter.position < iter.vec.Size()
 }
 
-func (v VectorIterator[T]) Value() T {
-	//TODO implement me
-	panic("implement me")
+func (iter *VectorIterator[T]) Value() T {
+	val := iter.vec.At(iter.position)
+	return val
 }
 
-func (v VectorIterator[T]) Next() iterator.Cursor[T] {
-	//TODO implement me
-	panic("implement me")
+func (iter *VectorIterator[T]) Next() iterator.Cursor[T] {
+	if iter.position < iter.vec.Size() {
+		iter.position++
+	}
+	return iter
 }
 
-func (v VectorIterator[T]) Clone() iterator.Cursor[T] {
-	//TODO implement me
-	panic("implement me")
+func (iter *VectorIterator[T]) Clone() iterator.Cursor[T] {
+	return &VectorIterator[T]{vec: iter.vec, position: iter.position}
 }
 
-func (v VectorIterator[T]) Equal(other iterator.Cursor[T]) bool {
-	//TODO implement me
-	panic("implement me")
+func (iter *VectorIterator[T]) Equal(other iterator.Cursor[T]) bool {
+	otherIter, ok := other.(*VectorIterator[T])
+	if !ok {
+		return false
+	}
+	if otherIter.vec == iter.vec && otherIter.position == iter.position {
+		return true
+	}
+	return false
 }
 
-func (v VectorIterator[T]) SetValue(value T) {
-	//TODO implement me
-	panic("implement me")
+func (iter *VectorIterator[T]) SetValue(value T) {
+	iter.vec.SetAt(iter.position, value)
 }
 
-func (v VectorIterator[T]) IteratorAt(position int) iterator.RandomAccessIterator[T] {
-	//TODO implement me
-	panic("implement me")
+func (iter *VectorIterator[T]) IteratorAt(position int) iterator.RandomAccessIterator[T] {
+	return &VectorIterator[T]{vec: iter.vec, position: position}
 }
 
-func (v VectorIterator[T]) Position() int {
-	//TODO implement me
-	panic("implement me")
+func (iter *VectorIterator[T]) Position() int {
+	return iter.position
 }
