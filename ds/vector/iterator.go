@@ -1,6 +1,9 @@
 package vector
 
-import "SPL/utils/iterator"
+import (
+	"SPL/utils/iterator"
+	"iter"
+)
 
 type T any
 
@@ -24,6 +27,13 @@ func (iter *VectorIterator[T]) Value() T {
 func (iter *VectorIterator[T]) Next() iterator.Cursor[T] {
 	if iter.position < iter.vec.Size() {
 		iter.position++
+	}
+	return iter
+}
+
+func (iter *VectorIterator[T]) Prev() iterator.ConstBidIterator[T] {
+	if iter.position > 0 {
+		iter.position--
 	}
 	return iter
 }
@@ -53,4 +63,14 @@ func (iter *VectorIterator[T]) IteratorAt(position int) iterator.RandomAccessIte
 
 func (iter *VectorIterator[T]) Position() int {
 	return iter.position
+}
+
+func (iter *VectorIterator[T]) ToSeq() iter.Seq[T] {
+	return func(yield func(T) bool) {
+		for _, val := range iter.vec.data {
+			if !yield(val) {
+				return
+			}
+		}
+	}
 }

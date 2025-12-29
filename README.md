@@ -1,5 +1,6 @@
 # SPG (Standard Package for GO)
 Try implementing the STL and some tools in GO.
+Study the gostl project and improve on its basis
 
 
 ## Acknowledgements

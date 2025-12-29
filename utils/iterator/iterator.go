@@ -15,7 +15,7 @@ type Cursor[T any] interface {
 type ConstIterator[T any] interface {
 	Cursor[T]
 	// All returns a sequence of all elements in the container.
-	All() iter.Seq[T]
+	ToSeq() iter.Seq[T]
 }
 
 // Iterator is an interface for mutable iterators.
@@ -28,7 +28,7 @@ type Iterator[T any] interface {
 type ConstKvIterator[K any, V any] interface {
 	Cursor[V]
 	Key() K
-	All() iter.Seq2[K, V]
+	ToSeq2() iter.Seq2[K, V]
 }
 
 // KvIterator is an interface for mutable key-value iterators.
@@ -45,7 +45,7 @@ type ConstBidIterator[T any] interface {
 
 // BidIterator is an interface for mutable bidirectional iterators.
 type BidIterator[T any] interface {
-	Cursor[T]
+	ConstBidIterator[T]
 	SetValue(value T)
 }
 
