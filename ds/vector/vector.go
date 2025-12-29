@@ -102,7 +102,7 @@ func (v *Vector[T]) EraseIndexRange(first, last int) {
 		return
 	}
 	left := v.data[:first]
-	right := v.data[last+1:]
+	right := v.data[last:]
 	v.data = append(left, right...)
 }
 
@@ -230,11 +230,5 @@ func (v *Vector[T]) All() iter.Seq2[int, T] {
 }
 
 func (v *Vector[T]) Values() iter.Seq[T] {
-	return func(yield func(T) bool) {
-		for _, val := range v.data {
-			if !yield(val) {
-				return
-			}
-		}
-	}
+	return v.Begin().ToSeq()
 }
