@@ -57,7 +57,7 @@ type ConstKvBidIterator[K any, V any] interface {
 
 // KvBidIterator is an interface for mutable bidirectional key-value iterators.
 type KvBidIterator[K any, V any] interface {
-	ConstKvBidIterator[K, V]
+	KvIterator[K, V]
 	BidIterator[V]
 }
 
