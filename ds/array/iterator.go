@@ -56,7 +56,7 @@ func (iter *ArrayIterator[T]) ToSeq() iter.Seq[T] {
 }
 
 func (iter *ArrayIterator[T]) Prev() iterator.ConstBidIterator[T] {
-	if iter.position > 0 {
+	if iter.position >= 0 {
 		iter.position--
 	}
 	return iter
