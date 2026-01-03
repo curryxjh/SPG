@@ -104,7 +104,7 @@ func TestVectorIterator(t *testing.T) {
 	}
 
 	i = 3
-	for iter := v.End(); iter.IsValid(); iter.Prev() {
+	for iter := v.Last(); iter.IsValid(); iter.Prev() {
 		assert.Equal(t, i+1, iter.Value())
 		i--
 	}

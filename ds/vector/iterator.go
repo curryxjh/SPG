@@ -32,7 +32,7 @@ func (iter *VectorIterator[T]) Next() iterator.Cursor[T] {
 }
 
 func (iter *VectorIterator[T]) Prev() iterator.ConstBidIterator[T] {
-	if iter.position > 0 {
+	if iter.position >= 0 {
 		iter.position--
 	}
 	return iter
