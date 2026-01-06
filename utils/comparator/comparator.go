@@ -2,6 +2,7 @@ package comparator
 
 import "cmp"
 
+// Ordered is a type alias for cmp.Ordered
 type Ordered = cmp.Ordered
 
 // Comparator is a function type that compares two values of type T and returns a integer.
