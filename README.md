@@ -3,8 +3,8 @@ Try implementing the STL and some tools in GO.
 Study the gostl project and improve on its basis
 
 ![iterator](./imgs/iterator.png)
-##迭代器接口
-其中Cursor作为基础的迭代器拥有基础的功能
+## 迭代器接口
+其中`Cursor[T]`作为基础的迭代器拥有基础的功能
 1. 当前指向的位置是否有效
 2. 获取当前指向位置的Value
 3. 获取下一个位置的游迭代器
@@ -21,11 +21,11 @@ type Cursor[T any] interface {
 ```
 
 下分两个分支
-1. 线性迭代器（ConstIterator）
-   a. 扩展Cursor[T]，增加GO1.23+的iter.Seq的集成，用于实现range遍历
-2. 键值对迭代器（ConstKvIterator）
-   a. 扩展Cursor[T]，增加GO1.23+的iter.Seq2的集成，用于实现range遍历
-   b. 增加Key()方法获取Key值
+1. 线性迭代器（`ConstIterator`）
+   a. 扩展`Cursor[T]`，增加GO1.23+的`iter.Seq[T]`的集成，用于实现`range`遍历
+2. 键值对迭代器（`ConstKvIterator[K,V]`）
+   a. 扩展`Cursor[T]`，增加`GO1.23+`的`iter.Seq2[K,V]`的集成，用于实现`range`遍历
+   b. 增加`Key() K`方法获取`Key`值
 
 
 ```go
