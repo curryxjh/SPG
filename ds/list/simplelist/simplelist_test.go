@@ -1,136 +1,79 @@
 package simplelist
 
-import "fmt"
+import (
+	"fmt"
+	"testing"
 
-// Node is the node of the simple list
-type Node[T any] struct {
-	next  *Node[T]
-	Value T
+	"github.com/stretchr/testify/assert"
+)
+
+func TestListBase(t *testing.T) {
+	l := New[int]()
+	assert.Equal(t, 0, l.Len())
+	l.PushBack(1)
+	assert.Equal(t, 1, l.Len())
+	assert.Equal(t, 1, l.FrontNode().Value)
+	assert.Equal(t, 1, l.BackNode().Value)
+	l.PushFront(2)
+
+	assert.Equal(t, 2, l.Len())
+	assert.Equal(t, 2, l.FrontNode().Value)
+	assert.Equal(t, "[2 1]", l.String())
+	l.PushBack(3)
+	l.PushBack(4)
+	assert.Equal(t, "[2 1 3 4]", l.String())
+
+	l.MoveToFront(l.FrontNode(), l.FrontNode().Next())
+	assert.Equal(t, "[1 2 3 4]", l.String())
+	l.MoveToBack(l.FrontNode(), l.FrontNode().Next())
+	assert.Equal(t, "[1 3 4 2]", l.String())
+
+	ret := make([]int, 0)
+	l.Traversal(func(val int) bool {
+		ret = append(ret, val)
+		return true
+	})
+	assert.Equal(t, "[1 3 4 2]", fmt.Sprintf("%v", ret))
 }
 
-func (n *Node[T]) Next() *Node[T] {
-	return n.next
+func TestListInsertAfter(t *testing.T) {
+	l := New[int]()
+	l.PushBack(1)
+	l.PushBack(2)
+	l.InsertAfter(3, l.FrontNode())
+	assert.Equal(t, "[1 3 2]", l.String())
+
+	l.InsertAfter(4, l.BackNode())
+	assert.Equal(t, "[1 3 2 4]", l.String())
+	l.InsertAfter(5, l.FrontNode())
+	assert.Equal(t, "[1 5 3 2 4]", l.String())
 }
 
-// head -> node_1 -> node_2 -> ... -> node_n <- tail
-type List[T any] struct {
-	head *Node[T] // head of the list
-	tail *Node[T] // tail of the list
-	len  int
-}
-
-func New[T any]() *List[T] {
-	return &List[T]{
-		head: nil,
-		tail: nil,
-		len:  0,
+func TestListRemove(t *testing.T) {
+	l := New[int]()
+	for i := 1; i <= 5; i++ {
+		l.PushBack(i)
 	}
+	assert.Equal(t, "[1 2 3 4 5]", l.String())
+	l.Remove(nil, l.FrontNode())
+	assert.Equal(t, "[2 3 4 5]", l.String())
+	l.Remove(l.FrontNode(), l.FrontNode().Next())
+	assert.Equal(t, "[2 4 5]", l.String())
 }
 
-func (l *List[T]) Len() int {
-	return l.len
-}
-
-func (l *List[T]) FrontNode() *Node[T] {
-	return l.head
-}
-
-func (l *List[T]) BackNode() *Node[T] {
-	return l.tail
-}
-
-func (l *List[T]) PushFront(v T) {
-	n := &Node[T]{Value: v}
-	if l.len == 0 {
-		l.head = n
-		l.tail = n
-	} else {
-		n.next = l.head
-		l.head = n
+func TestListIterator(t *testing.T) {
+	l := New[int]()
+	for i := 1; i <= 5; i++ {
+		l.PushBack(i)
 	}
-	l.len++
-}
-
-func (l *List[T]) PushBack(v T) {
-	n := &Node[T]{Value: v}
-	if l.len == 0 {
-		l.head = n
-		l.tail = n
-	} else {
-		l.tail.next = n
-		l.tail = n
+	assert.Equal(t, "[1 2 3 4 5]", l.String())
+	i := 1
+	for iter := NewIterator(l.FrontNode()); iter.IsValid(); iter.Next() {
+		assert.Equal(t, i, iter.Value())
+		iter.SetValue(i * 2)
+		i++
 	}
-	l.len++
-}
-
-func (l *List[T]) InsertAfter(v T, at *Node[T]) *Node[T] {
-	return l.insertAfter(&Node[T]{Value: v}, at)
-}
-
-func (l *List[T]) insertAfter(n, at *Node[T]) *Node[T] {
-	n.next = at.next
-	at.next = n
-	if n.next == nil {
-		l.tail = n
-	}
-	l.len++
-	return n
-}
-
-func (l *List[T]) Remove(pre, n *Node[T]) T {
-	if n == nil {
-		return *new(T)
-	}
-	if pre == nil {
-		// remove head
-		l.head = n.next
-		if l.head == nil {
-			l.tail = nil
-		}
-	} else {
-		pre.next = n.next
-		if pre.next == nil {
-			l.tail = pre
-		}
-	}
-	l.len--
-	return n.Value
-}
-
-func (l *List[T]) moveFront(pre, n *Node[T]) {
-	if pre == nil || n == nil || pre.next != n || l.len <= 1 {
-		return
-	}
-	pre.next = n.next
-	if pre.next == nil {
-		l.tail = pre
-	}
-	n.next = l.head
-	l.head = n
-}
-
-func (l *List[T]) moveBack(pre, n *Node[T]) {
-	if n == nil || n.next == nil || l.len <= 1 {
-		return
-	}
-	if pre == nil {
-		l.head = n.next
-	} else {
-		pre.next = n.next
-	}
-	l.tail.next = n
-	l.tail = n
-	n.next = nil
-}
-
-func (l *List[T]) String() string {
-	str := "["
-	for n := l.head; n != nil; n = n.next {
-		if str != "[" {
-			str += " "
-		}
-		str += fmt.Sprintf("%v", n.Value)
-	}
-	str += "]"
-	return str
+	iter := NewIterator(l.FrontNode())
+	assert.Equal(t, 2, iter.Value())
+	assert.True(t, iter.Equal(iter.Clone()))
 }
